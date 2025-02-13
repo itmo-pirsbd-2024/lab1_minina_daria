@@ -1,0 +1,48 @@
+plugins {
+    id 'java'
+    id 'me.champeau.jmh' version '0.7.1' // Плагин для JMH
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.13.2'
+    implementation 'org.openjdk.jmh:jmh-core:1.36'
+    annotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.36'
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+test {
+    useJUnit()
+}
+
+
+jmh {
+    includes = ['.*'] // Запускать все бенчмарки
+    profilers = ['async'] // Использовать async-profiler
+    warmupIterations = 5 // Количество итераций для разогрева
+    iterations = 10 // Количество итераций для измерения
+    fork = 1 // Количество форков
+
+    jvmArgs = [
+            "-Djava.library.path=/Users/dascha/IdeaProjects/lab1/async-profiler/build/lib",
+            "-agentpath:/Users/dascha/IdeaProjects/lab1/async-profiler/build/lib/libasyncProfiler.dylib=start,event=cpu,file=profile2.html"
+    ]
+
+}
+
+
+task profile(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'org.example.PerformanceRunner'
+    jvmArgs = [
+            "-agentpath:/Users/dascha/IdeaProjects/lab1/async-profiler/build/lib/libasyncProfiler.dylib=start,event=cpu,file=profile.html"
+    ]
+}
